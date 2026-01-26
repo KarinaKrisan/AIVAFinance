@@ -1,9 +1,31 @@
-import React, { useContext } from 'react';
-import { FinanceContext } from '../context/FinanceContext';
+import React from 'react';
 import { Wallet } from 'lucide-react';
+// Importamos direto do firebase para testar a conexão real
+import { auth, googleProvider } from '../firebase'; 
+import { signInWithPopup } from 'firebase/auth';
 
 export default function Login() {
-  const { loginGoogle } = useContext(FinanceContext);
+
+  const handleDebugLogin = async () => {
+    try {
+      console.log("1. Iniciando login de teste...");
+      
+      // Força o popup a abrir direto
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      // Se passar daqui, funcionou!
+      console.log("2. Sucesso:", result.user);
+      alert(`SUCESSO! Logado como: ${result.user.displayName || result.user.email}`);
+      
+      // Recarrega a página para o seu App pegar o usuário logado
+      window.location.href = "/"; 
+
+    } catch (error) {
+      // AQUI ESTÁ A CHAVE DO PROBLEMA
+      console.error("Erro capturado:", error);
+      alert(`ERRO CRÍTICO (Mande foto disso):\n\nCódigo: ${error.code}\nMensagem: ${error.message}`);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-700 p-4">
@@ -14,10 +36,10 @@ export default function Login() {
         </div>
 
         <h1 className="text-3xl font-bold text-gray-800 mb-2">AIVAFinance</h1>
-        <p className="text-gray-500 mb-8">Seu controle financeiro inteligente e na nuvem.</p>
+        <p className="text-gray-500 mb-8">Debug Mode: Teste de Conexão</p>
 
         <button 
-          onClick={loginGoogle}
+          onClick={handleDebugLogin}
           className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-4 px-6 rounded-xl transition shadow-sm"
         >
           <img 
@@ -25,11 +47,11 @@ export default function Login() {
             alt="Google" 
             className="w-6 h-6"
           />
-          Entrar com Google
+          Testar Login Google
         </button>
 
         <p className="text-xs text-gray-400 mt-8">
-          Seus dados salvos com segurança no Google Cloud.
+          Se der erro, tire um print do alerta que aparecer.
         </p>
       </div>
     </div>
