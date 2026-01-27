@@ -3,11 +3,12 @@ import { FinanceContext } from '../context/FinanceContext';
 import { X, Copy, Check, MessageCircle, ExternalLink } from 'lucide-react';
 
 export default function TelegramModal({ onClose }) {
-  // 1. Pegamos o objeto 'user' para acessar o ID fixo (uid)
+  // 1. Pegamos o 'user' para acessar o ID real (UID)
   const { user } = useContext(FinanceContext);
   const [copied, setCopied] = useState(false);
 
-  // 2. Define o código como o UID do usuário. Se ainda estiver carregando, mostra aviso.
+  // 2. Define o código como o UID do usuário.
+  // Se o usuário ainda não carregou, mostra "Carregando..."
   const userCode = user?.uid || 'Carregando...';
 
   const handleCopy = () => {
@@ -50,7 +51,7 @@ export default function TelegramModal({ onClose }) {
                     className="group relative bg-gray-50 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-2xl p-4 flex justify-between items-center cursor-pointer transition-all"
                 >
                     <div className="font-mono text-sm sm:text-lg text-gray-700 font-bold truncate mr-2">
-                        {/* AQUI ESTÁ A MUDANÇA: Mostra o comando fixo */}
+                        {/* Mostra o comando fixo com seu ID */}
                         {`/conectar ${userCode}`}
                     </div>
                     <div className="text-gray-400 group-hover:text-blue-500 transition-colors shrink-0">
@@ -75,7 +76,6 @@ export default function TelegramModal({ onClose }) {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition transform hover:-translate-y-1"
                 >
-                    <MessageCircle size={20} />
                     <MessageCircle size={20} />
                     Abrir @AIVAFinanceBot
                     <ExternalLink size={16} className="opacity-50" />
