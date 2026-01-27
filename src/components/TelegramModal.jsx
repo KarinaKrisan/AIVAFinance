@@ -1,24 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FinanceContext } from '../context/FinanceContext';
 import { X, Copy, Check, MessageCircle, ExternalLink } from 'lucide-react';
 
 export default function TelegramModal({ onClose }) {
-  const { generateBotToken, userProfile } = useContext(FinanceContext);
-  const [code, setCode] = useState('');
+  // 1. Pegamos o objeto 'user' para acessar o ID fixo (uid)
+  const { user } = useContext(FinanceContext);
   const [copied, setCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCode = async () => {
-      const token = await generateBotToken();
-      setCode(token);
-      setLoading(false);
-    };
-    fetchCode();
-  }, [generateBotToken]);
+  // 2. Define o código como o UID do usuário. Se ainda estiver carregando, mostra aviso.
+  const userCode = user?.uid || 'Carregando...';
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`/conectar ${code}`);
+    navigator.clipboard.writeText(`/conectar ${userCode}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -56,10 +49,11 @@ export default function TelegramModal({ onClose }) {
                     onClick={handleCopy}
                     className="group relative bg-gray-50 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-2xl p-4 flex justify-between items-center cursor-pointer transition-all"
                 >
-                    <div className="font-mono text-lg text-gray-700 font-bold">
-                        {loading ? 'Gerando...' : `/conectar ${code}`}
+                    <div className="font-mono text-sm sm:text-lg text-gray-700 font-bold truncate mr-2">
+                        {/* AQUI ESTÁ A MUDANÇA: Mostra o comando fixo */}
+                        {`/conectar ${userCode}`}
                     </div>
-                    <div className="text-gray-400 group-hover:text-blue-500 transition-colors">
+                    <div className="text-gray-400 group-hover:text-blue-500 transition-colors shrink-0">
                         {copied ? <Check size={20} className="text-emerald-500"/> : <Copy size={20}/>}
                     </div>
                     
@@ -69,10 +63,10 @@ export default function TelegramModal({ onClose }) {
                         </div>
                     )}
                 </div>
-                <p className="text-xs text-gray-400">Clique na caixa acima para copiar automaticamente.</p>
+                <p className="text-xs text-gray-400">Este é seu ID único. Não compartilhe com estranhos.</p>
             </div>
 
-            {/* Passo 2: O Botão (LINK NOVO AQUI) */}
+            {/* Passo 2: O Botão */}
             <div className="space-y-2">
                 <label className="text-sm font-bold text-gray-600 uppercase">2. Inicie a AIVA no Telegram</label>
                 <a 
@@ -82,6 +76,7 @@ export default function TelegramModal({ onClose }) {
                     className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition transform hover:-translate-y-1"
                 >
                     <MessageCircle size={20} />
+                    <MessageCircle size={20} />
                     Abrir @AIVAFinanceBot
                     <ExternalLink size={16} className="opacity-50" />
                 </a>
@@ -90,7 +85,7 @@ export default function TelegramModal({ onClose }) {
             {/* Instrução Final */}
             <div className="bg-blue-50 p-4 rounded-xl text-sm text-blue-700 flex gap-3 items-start">
                 <div className="mt-1">💡</div>
-                <p>Ao abrir o Telegram, cole o código copiado e envie para vincular sua conta instantaneamente.</p>
+                <p>Ao abrir o Telegram, envie o comando copiado acima para o bot saber que é você.</p>
             </div>
 
         </div>
