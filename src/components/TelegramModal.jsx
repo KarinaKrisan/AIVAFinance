@@ -1,94 +1,57 @@
 import React, { useContext, useState } from 'react';
 import { FinanceContext } from '../context/FinanceContext';
-import { X, Copy, Check, MessageCircle, ExternalLink } from 'lucide-react';
+import { X, Copy, Check, MessageCircle } from 'lucide-react';
 
 export default function TelegramModal({ onClose }) {
-  // 1. Pegamos o 'user' para acessar o ID real (UID)
   const { user } = useContext(FinanceContext);
   const [copied, setCopied] = useState(false);
 
-  // 2. Define o código como o UID do usuário.
-  // Se o usuário ainda não carregou, mostra "Carregando..."
-  const userCode = user?.uid || 'Carregando...';
+  // O comando fixo (sem números aleatórios)
+  const command = `/conectar ${user?.uid || '...'}`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`/conectar ${userCode}`);
+    navigator.clipboard.writeText(command);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-sm rounded-xl p-6 shadow-xl relative">
         
-        {/* Fundo Decorativo */}
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+        {/* Botão Fechar */}
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+          <X size={20} />
+        </button>
 
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-                <div className="bg-blue-100 p-3 rounded-2xl text-blue-600">
-                    <MessageCircle size={24} />
-                </div>
-                <div>
-                    <h2 className="text-xl font-bold text-gray-800">Conectar AIVA</h2>
-                    <p className="text-xs text-gray-500">Sua assistente financeira</p>
-                </div>
-            </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition">
-                <X size={20} className="text-gray-400" />
-            </button>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <MessageCircle className="text-blue-600" />
+          Conectar Telegram
+        </h2>
+
+        {/* Área do Código */}
+        <div className="bg-gray-100 p-4 rounded-lg mb-4 flex justify-between items-center">
+          <code className="font-mono text-sm font-bold text-gray-700 truncate mr-2">
+            {command}
+          </code>
+          <button onClick={handleCopy} className="text-gray-500 hover:text-blue-600">
+            {copied ? <Check size={18} className="text-green-500"/> : <Copy size={18}/>}
+          </button>
         </div>
 
-        {/* Passo a Passo */}
-        <div className="space-y-6">
-            
-            {/* Passo 1: O Código */}
-            <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-600 uppercase">1. Copie seu comando</label>
-                <div 
-                    onClick={handleCopy}
-                    className="group relative bg-gray-50 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-2xl p-4 flex justify-between items-center cursor-pointer transition-all"
-                >
-                    <div className="font-mono text-sm sm:text-lg text-gray-700 font-bold truncate mr-2">
-                        {/* Mostra o comando fixo com seu ID */}
-                        {`/conectar ${userCode}`}
-                    </div>
-                    <div className="text-gray-400 group-hover:text-blue-500 transition-colors shrink-0">
-                        {copied ? <Check size={20} className="text-emerald-500"/> : <Copy size={20}/>}
-                    </div>
-                    
-                    {copied && (
-                        <div className="absolute -top-8 right-0 bg-black text-white text-xs py-1 px-3 rounded-lg shadow-lg animate-in fade-in slide-in-from-bottom-2">
-                            Copiado!
-                        </div>
-                    )}
-                </div>
-                <p className="text-xs text-gray-400">Este é seu ID único. Não compartilhe com estranhos.</p>
-            </div>
-
-            {/* Passo 2: O Botão */}
-            <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-600 uppercase">2. Inicie a AIVA no Telegram</label>
-                <a 
-                    href="https://t.me/AIVAFinanceBot" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition transform hover:-translate-y-1"
-                >
-                    <MessageCircle size={20} />
-                    Abrir @AIVAFinanceBot
-                    <ExternalLink size={16} className="opacity-50" />
-                </a>
-            </div>
-
-            {/* Instrução Final */}
-            <div className="bg-blue-50 p-4 rounded-xl text-sm text-blue-700 flex gap-3 items-start">
-                <div className="mt-1">💡</div>
-                <p>Ao abrir o Telegram, envie o comando copiado acima para o bot saber que é você.</p>
-            </div>
-
-        </div>
+        {/* Botão Abrir Telegram */}
+        <a 
+          href="https://t.me/AIVAFinanceBot" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block w-full bg-blue-600 text-white text-center font-bold py-3 rounded-lg hover:bg-blue-700 transition"
+        >
+          Abrir Bot no Telegram
+        </a>
+        
+        <p className="text-xs text-center text-gray-500 mt-4">
+          Copie o código acima e envie para o bot.
+        </p>
       </div>
     </div>
   );
